@@ -94,22 +94,20 @@ def remove(name):
 def list():
     """ list available network configurations """
     for key, config in configs.items():
-        active = config_active(config)
-        s = '{token} {x.name}: {x.ip}'.format(
-            token='>' if active else ' ', x=config)
+        s = '{x.name}: {x.ip}'.format(x=config)
         click.echo(s)
-    save_configs()
 
 
 @cli.command()
 def status():
     """ show current network status """
-    s = 'DHCP\n' if dhcp_enabled() else ''
+    nic = get_nic()
+    s = 'DHCP\n' if dhcp_enabled(nic) else ''
     s += ('IP: {ip}\nSubnetmask: {subnetmask}\n'
           'Gateway: {gateway}'.format(
-              ip=ip_address(),
-              subnetmask=subnetmask(),
-              gateway=gateway()
+              ip=ip_address(nic),
+              subnetmask=subnetmask(nic),
+              gateway=gateway(nic)
           ))
     click.echo(s)
 
