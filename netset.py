@@ -1,16 +1,18 @@
-#! c:\miniconda\python
+#! python
 from collections import namedtuple
+from tabulate import tabulate
 import os
 import time
-import sys
 import click
 import wmi
 import pickle
-from functools import wraps
 
 
 TIMEOUT_SECONDS = 120
 CONFIG_FILENAME = 'netset.pkl'
+
+# Save list function
+list_ = list
 
 
 # static configuration
@@ -56,6 +58,23 @@ def config_active(config):
             config.gateway == gateway(nic))
 
 
+def get_active_configs():
+    nic = get_nic()
+
+    active_dhcp = dhcp_enabled(nic)
+    active_ip = ip_address(nic)
+    active_subnetmask = subnetmask(nic)
+    active_gateway = gateway(nic)
+
+    for key, config in configs.items():
+        if active_dhcp and config.dhcp:
+            yield config.name
+        else:
+            if (active_ip, active_subnetmask, active_gateway) == \
+                    (config.ip, config.subnetmask, config.gateway):
+                yield config.name
+
+
 def save_configs():
     global configs
     with open(CONFIG_FILENAME, 'wb') as f:
@@ -92,15 +111,24 @@ def remove(name):
 
 @cli.command()
 def list():
+
+    active_configs = list_(get_active_configs())
+
+    def list_data(x):
+        active = '*' if x.name in active_configs else ''
+        if x.dhcp:
+            return '{}{}'.format(x.name, active), 'DHCP', '-', '-'
+        else:
+            return '{}{}'.format(x.name, active), x.ip, x.subnetmask, x.gateway
+
     """ list available network configurations """
-    for key, config in configs.items():
-        s = '{x.name}: {x.ip}'.format(x=config)
-        click.echo(s)
+    headers = ['Name', 'IP-Address', 'Subnetmask', 'Gateway']
+    table = [list_data(x) for _, x in configs.items()]
+    click.echo('\nNetset Profiles:\n')
+    click.echo(tabulate(table, headers))
 
 
-@cli.command()
-def status():
-    """ show current network status """
+def _status():
     nic = get_nic()
     s = 'DHCP\n' if dhcp_enabled(nic) else ''
     s += ('IP: {ip}\nSubnetmask: {subnetmask}\n'
@@ -109,7 +137,14 @@ def status():
               subnetmask=subnetmask(nic),
               gateway=gateway(nic)
           ))
+    click.echo('\nCurrent Network Status:\n')
     click.echo(s)
+
+
+@cli.command()
+def status():
+    """ show current network status """
+    _status()
 
 
 @cli.command()
@@ -130,15 +165,15 @@ def load(config):
     while not abs(time.perf_counter() - t0) > TIMEOUT_SECONDS:
         if config_active(config):
             click.echo('Successfully changed to config "{}".'.format(config_name))
+            _status()
             break
         time.sleep(1)
     else:
-        click.echo('Timeout')
+        click.echo('\nTimeout')
 
 
 def main():
     global configs
-
     if os.path.isfile(CONFIG_FILENAME):
         with open(CONFIG_FILENAME, 'rb') as f:
             configs = pickle.load(f)
@@ -148,4 +183,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
