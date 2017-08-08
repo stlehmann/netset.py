@@ -1,11 +1,12 @@
 from setuptools import setup
+from netset import __version__
 
 
 setup(
     name='netset',
-    version='0.0.1',
-    description='A network configuration tool for the commandline, written'
-                'in Python',
+    version=__version__,
+    description='A network configuration tool for the commandline, written '
+                'in Python.',
     url='https://github.com/MrLeeh/netset.py',
     license='MIT',
     keywords='network',
@@ -15,6 +16,7 @@ setup(
         'tabulate>=0.7.7',
         'wmi>=1.4.9'
     ],
+    py_modules=['netset'],
     entry_points={
         'console_scripts': [
             'netset=netset:main'

@@ -8,8 +8,11 @@ import wmi
 import pickle
 
 
+__version__ = '0.0.2'
+
 TIMEOUT_SECONDS = 120
 CONFIG_FILENAME = 'netset.pkl'
+
 
 # Save list function
 list_ = list
@@ -41,6 +44,8 @@ def subnetmask(nic):
 
 def gateway(nic):
     gateway = nic.wmi_property('DefaultIPGateway')
+    if gateway.value is None:
+        return
     return gateway.value[0]
 
 
@@ -65,6 +70,7 @@ def get_active_configs():
     active_ip = ip_address(nic)
     active_subnetmask = subnetmask(nic)
     active_gateway = gateway(nic)
+
 
     for key, config in configs.items():
         if active_dhcp and config.dhcp:
