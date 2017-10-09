@@ -44,9 +44,10 @@ def subnetmask(nic):
 
 def gateway(nic):
     gateway = nic.wmi_property('DefaultIPGateway')
-    if gateway.value is None:
+    try:
+        return gateway.value[0]
+    except TypeError:
         return
-    return gateway.value[0]
 
 
 def dhcp_enabled(nic):
