@@ -8,7 +8,7 @@ import wmi
 import pickle
 
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 TIMEOUT_SECONDS = 120
 CONFIG_FILENAME = "netset.pkl"
