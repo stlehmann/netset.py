@@ -12,7 +12,7 @@ setup(
     keywords='network',
     install_requires=[
         'click>=6.7',
-        'pypiwin32>=220',
+        'pywin32>=220',
         'tabulate>=0.7.7',
         'wmi>=1.4.9'
     ],
