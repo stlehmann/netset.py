@@ -1,10 +1,9 @@
 from setuptools import setup
-from netset import __version__
 
 
 setup(
     name='netset',
-    version=__version__,
+    version='0.0.4',
     description='A network configuration tool for the commandline, written '
                 'in Python.',
     url='https://github.com/MrLeeh/netset.py',
