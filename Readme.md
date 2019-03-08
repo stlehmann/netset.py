@@ -11,11 +11,12 @@ A Network configuration tool for the commandline.
 
 ## Usage
 
+**You need administrative rights on your PC in order to change the network settings.**
 
 ### Create a static network profile
 
 ```
-c:\> netset.py add myprofile --ip 192.168.1.110 -m 255.255.255.0 -g 192.168.1.1
+c:\> netset add myprofile --ip 192.168.1.110 -m 255.255.255.0 -g 192.168.1.1
 ```
 
 Creates a new network profile named myprofile with the following configuration:
@@ -27,7 +28,7 @@ Creates a new network profile named myprofile with the following configuration:
 ### Create s dynamic network profile with DHCP
 
 ```
-c:\> netset.py add static --dhcp
+c:\> netset add dhcp --dhcp
 ```
 
 Creates a new network profile with DHCP enabled.
@@ -35,7 +36,7 @@ Creates a new network profile with DHCP enabled.
 ### List available profiles
 
 ```
-c:\> netset.py list
+c:\> netset ls
 
 Name      IP-Address     Subnetmask     Gateway
 --------  -------------  -------------  -----------
@@ -49,7 +50,7 @@ List all available network profiles.
 ### Load a network profile
 
 ```
-c:\> netset.py load myconfig
+c:\> netset load myconfig
 Successfully changed to config "myconfig".
 
 Current Network Status:
@@ -62,7 +63,7 @@ Gateway: 192.168.1.1
 ### Show the current network status
 
 ```
-c:\> netset.py status
+c:\> netset status
 
 Current Network Status:
 
